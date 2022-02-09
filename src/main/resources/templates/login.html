@@ -1,25 +1,27 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
-    <head>
+    <head th:replace="fragments/common::common-header('ログイン画面')">
         <title>ログイン画面</title>
     </head>
     <body>
-        <p th:if="${param.error}">
-            IDまたはパスワードが間違っています。
-        </p>
+        <main class="container">
+            <p th:if="${param.error}">
+                IDまたはパスワードが間違っています。
+            </p>
 
-        <p th:if="${param.logout}">
-            ログアウトしました。
-        </p>
+            <p th:if="${param.logout}">
+                ログアウトしました。
+            </p>
 
-        <form th:action="@{/login}" method="post">
-            <div><label> ユーザー名 : <input type="text" name="username"/> </label></div>
-            <div><label> パスワード: <input type="password" name="password"/> </label></div>
-            <div><input type="submit" value="ログイン"/></div>
-        </form>
+            <form th:action="@{/login}" method="post">
+                <div class="mb-3"><label> ユーザー名 : <input type="text" name="username" class="form-control"/> </label></div>
+                <div class="mb-3"><label> パスワード: <input type="password" name="password" class="form-control"/> </label></div>
+                <div class="mb-3"><input type="submit" value="ログイン" class="btn btn-primary"/></div>
+            </form>
+        </main>
 
-        <p>
+        <footer th:replace="fragments/common::common-footer">
             <a th:href="@{/}">HOME</a>
-        </p>
+        </footer>
     </body>
 </html>

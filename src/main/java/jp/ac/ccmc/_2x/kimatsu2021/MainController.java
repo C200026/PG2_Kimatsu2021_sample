@@ -2,9 +2,15 @@ package jp.ac.ccmc._2x.kimatsu2021;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +27,11 @@ public class MainController {
 	public String viewHomaPage(Model model) {
 		List<Account> listAccounts = service.listAll();
 		model.addAttribute("listAccounts", listAccounts);
+
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		boolean isAutherized = authentication.getPrincipal() instanceof UserDetails;
+		model.addAttribute("isAutherized", isAutherized);
+
 		return "index";
 	}
 
@@ -32,7 +43,11 @@ public class MainController {
 	}
 
 	@PostMapping("/new")
-	public String createAccount(@ModelAttribute("account") Account account, RedirectAttributes redirectAttributes) {
+	public String createAccount(@Valid @ModelAttribute("account") Account account, BindingResult bindingResult , RedirectAttributes redirectAttributes) {
+		if (bindingResult.hasErrors()) {
+			return "new";
+		}
+
 		service.save(account);
         String message = "#" + account.getId() + "「" + account.getName() + "」を新規作成しました。";
         redirectAttributes.addFlashAttribute("message", message);
@@ -47,7 +62,10 @@ public class MainController {
 	}
 
 	@PostMapping("/edit")
-	public String saveEditData(@ModelAttribute("account") Account account, RedirectAttributes redirectAttributes) {
+	public String saveEditData(@Valid @ModelAttribute("account") Account account, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+		if (bindingResult.hasErrors()) {
+			return "edit";
+		}
 		service.save(account);
         String message = "#" + account.getId() + "「" + account.getName() + "」を編集しました。";
         redirectAttributes.addFlashAttribute("message", message);
@@ -56,13 +74,16 @@ public class MainController {
 
 	@GetMapping("/delete/{id}")
 	public String confirmDeleting(@PathVariable(name="id") int id, Model model) {
-		service.delete(id);
-        return "redirect:/";
+		Account account = service.get(id);
+        model.addAttribute("account", account);
+		return "delete";
 	}
 
 	@PostMapping("/delete")
 	public String deleteAccount(@ModelAttribute("account") Account account, RedirectAttributes redirectAttributes) {
 		service.delete(account.getId());
+        String message = "#" + account.getId() + "「" + account.getName() + "」を削除しました。";
+        redirectAttributes.addFlashAttribute("message", message);
 		return "redirect:/";
 	}
 

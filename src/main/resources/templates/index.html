@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:replace="fragments/common::common-header('アカウント一覧')">
     <meta charset="UTF-8">
     <title>アカウント一覧</title>
     <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
-    <header>
+    <header class="jumbotron text-center">
         <h1>アカウント一覧</h1>
+        <img src="/photo01.jpg" width="10%" />
     </header>
 
-	<main>
+	<main class="container">
         <p th:if="${message}" th:text="${message}">
             メッセージ
         </p>
@@ -19,7 +20,7 @@
             <input type="button" onclick="location.href='/new';" value="新規アカウント作成" />
         </p>
 
-		<table>
+		<table class="table table-dark table-striped">
 			<thead>
 				<th>ID</th>
 				<th>名前</th>
@@ -46,6 +47,12 @@
 
 		<p th:if="${listAccounts.size() == 0}">データは存在しません。</p>
 
+        <form th:if="${isAutherized}" th:action="@{/logout}" method="post">
+            <input type="submit" value="ログアウト"/>
+        </form>
+
     </main>
+
+	<footer th:replace="fragments/common::common-footer"></footer>
 </body>
 </html>
